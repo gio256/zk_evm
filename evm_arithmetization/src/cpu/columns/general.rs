@@ -163,3 +163,21 @@ pub(crate) struct CpuStackView<T: Copy> {
 /// Number of columns shared by all the views of `CpuGeneralColumnsView`.
 /// `u8` is guaranteed to have a `size_of` of 1.
 pub(crate) const NUM_SHARED_COLUMNS: usize = size_of::<CpuGeneralColumnsView<u8>>();
+
+#[cfg(test)]
+mod tests {
+    use plonky2::field::types::Field;
+    use plonky2::field::goldilocks_field::GoldilocksField;
+    use crate::cpu::columns::general::{CpuGeneralColumnsView, CpuShiftView};
+    use crate::cpu::columns::{CpuColumnsView, NUM_CPU_COLUMNS};
+
+    #[test]
+    fn test_ub() {
+        type F = GoldilocksField;
+
+        let shift = CpuShiftView { high_limb_sum_inv: F::ZERO };
+        let general = CpuGeneralColumnsView { shift };
+        let cols = CpuColumnsView { general, ..Default::default() };
+        let arr: [F; NUM_CPU_COLUMNS] = cols.into();
+    }
+}
